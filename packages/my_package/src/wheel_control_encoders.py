@@ -2,7 +2,6 @@
 
 import os
 import rospy
-import rosbag
 from duckietown.dtros import DTROS, NodeType
 from duckietown_msgs.msg import WheelsCmdStamped, WheelEncoderStamped
 from std_msgs.msg import Header
@@ -56,7 +55,9 @@ class WheelControlNode(DTROS):
 
         if(not rospy.is_shutdown()): rospy.loginfo_once("c")
 
-        while not rospy.is_shutdown() and (compute_distance(self._ticks_left - init_ticks_left) < distance_left) and (compute_distance(self._ticks_right - init_ticks_right) < distance_right):
+        while (not rospy.is_shutdown()) and \
+        (abs(compute_distance(self._ticks_left - init_ticks_left)) < abs(distance_left)) and \
+        (abs(compute_distance(self._ticks_right - init_ticks_right)) < abs(distance_right)):
             msg.header.stamp = rospy.Time.now()
             self._publisher.publish(msg)
             rate.sleep()
@@ -72,13 +73,18 @@ class WheelControlNode(DTROS):
 
     def run(self):
         rospy.sleep(1)
-        # self.motor_control(0.5, 0.5, 1.25, 1.25)
-        rospy.sleep(0.5)
+        self.motor_control(0.5, 0.5, 1.25, 1.25)
+        rospy.sleep(1)
         self.motor_control(-0.5, -0.5, 1.25, 1.25)
-        # self.motor_control(0.3, -0.3, 0.09, -0.09) # 90 deg right rotation
-        # self.motor_control(-0.3, 0.3, -0.09, 0.09) # 90 deg left rotation
-
-        # self.motor_control(0.494, 0.7, 0.377, 0.534) #left curve 90 deg with 29cm rad
+        rospy.sleep(1)
+        self.motor_control(0.3, -0.3, 0.09, 0.09) # 90 deg right rotation
+        rospy.sleep(1)
+        self.motor_control(-0.3, 0.3, 0.09, 0.09) # 90 deg left rotation
+        # rospy.sleep(1)
+        # self.motor_control(0.242, 0.66, 0.377, 0.534) #left curve 90 deg with 29cm rad
+        # rospy.sleep(1)
+        # self.motor_control(0.60, 0.272, 0.534, 0.377) #right curve 90 deg with 29cm rad
+        
 
 if __name__ == '__main__':
     node = WheelControlNode(node_name='wheel_control_node')
