@@ -6,8 +6,7 @@ source /environment.sh
 dt-launchfile-init
 
 # launch subscriber
-rosrun my_package wheel_control_node.py _task_type:=turn _turn_direction:=right
-rosrun my_package wheel_control_node.py _task_type:=turn _turn_direction:=left
+rosrun my_package wheel_control_encoders.py
 
 # wait for app to end
 dt-launchfile-join
