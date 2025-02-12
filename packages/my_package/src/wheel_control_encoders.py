@@ -78,6 +78,7 @@ class WheelControlNode(DTROS):
             
             diff = abs(left_dist) - abs(right_dist)*dist_ratio
             modifier = 55 * diff/1000
+
             msg.vel_left = left_power * (1 - modifier)
             msg.vel_right = right_power * (1 + modifier)
 
@@ -99,14 +100,14 @@ class WheelControlNode(DTROS):
         #-----------------
         #part 2
         #-----------------
-        # rospy.sleep(1)
-        # self.dynamic_motor_control(0.5, 0.5, 1.25, 1.25)
-        # rospy.sleep(1)
-        # self.motor_control(-0.5, -0.5, 1.25, 1.25)
-        # rospy.sleep(1)
-        # self.motor_control(0.8, -0.8, 0.09, 0.09) # 90 deg right rotation
-        # rospy.sleep(1)
-        # self.motor_control(-0.3, 0.3, 0.09, 0.09) # 90 deg left rotation
+        rospy.sleep(1)
+        self.dynamic_motor_control(0.5, 0.5, 1.25, 1.25)
+        rospy.sleep(1)
+        self.dynamic_motor_control(-0.5, -0.5, 1.25, 1.25)
+        rospy.sleep(1)
+        self.dynamic_motor_control(0.8, -0.8, 0.061, 0.061) # 90 deg right rotation
+        rospy.sleep(1)
+        self.dynamic_motor_control(-0.8, 0.8, 0.061, 0.061) # 90 deg left rotation
 
 
         #-----------------
@@ -114,10 +115,10 @@ class WheelControlNode(DTROS):
         #-----------------
         rospy.sleep(1)
         self.set_led_color(1, 0, 0)
-        self.dynamic_motor_control(0.5, 0.5, 1.15, 1.15)
+        self.dynamic_motor_control(0.5, 0.5, 1.12, 1.12)
         rospy.sleep(1)
         self.set_led_color(0, 0, 1)
-        self.dynamic_motor_control(0.5, -0.5, 0.061, 0.061)
+        self.dynamic_motor_control(0.6, -0.6, 0.061, 0.061)
         rospy.sleep(1)
         self.set_led_color(1, 0, 0)
         self.dynamic_motor_control(0.5, 0.5, 0.85, 0.85)
@@ -126,16 +127,16 @@ class WheelControlNode(DTROS):
         self.dynamic_motor_control(0.586, 0.4, 0.534, 0.377)
         rospy.sleep(1)
         self.set_led_color(1, 0, 0)
-        self.dynamic_motor_control(0.5, 0.5, 0.53, 0.53)
+        self.dynamic_motor_control(0.5, 0.5, 0.57, 0.57)
         rospy.sleep(1)
         self.set_led_color(0, 1, 0)
-        self.dynamic_motor_control(0.586, 0.3, 0.534, 0.377)
+        self.dynamic_motor_control(0.586, 0.4, 0.534, 0.377)
         rospy.sleep(1)
         self.set_led_color(1, 0, 0)
         self.dynamic_motor_control(0.5, 0.5, 0.85, 0.85)
         rospy.sleep(1)
         self.set_led_color(0, 0, 1)
-        self.dynamic_motor_control(0.5, -0.5, 0.061, 0.061)
+        self.dynamic_motor_control(0.65, -0.65, 0.061, 0.061)
 
 if __name__ == '__main__':
     node = WheelControlNode(node_name='wheel_control_node')
