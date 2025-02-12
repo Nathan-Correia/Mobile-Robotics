@@ -3,14 +3,18 @@
 import os
 import rospy
 from duckietown.dtros import DTROS, NodeType
-from duckietown_msgs.msg import WheelsCmdStamped, WheelEncoderStamped
-from std_msgs.msg import Header
+from duckietown_msgs.msg import WheelsCmdStamped, WheelEncoderStamped, LEDPattern
+from std_msgs.msg import Header, ColorRGBA
 
 Wheel_rad = 0.0318
 
 def compute_distance(ticks):
     rotations = ticks/135
     return 2 * 3.1415 * Wheel_rad * rotations
+
+def compute_ticks(distance):
+    rotations = distance / (2 * 3.1415 * Wheel_rad)
+    return rotations * 135
 
 
 class WheelControlNode(DTROS):
@@ -20,6 +24,7 @@ class WheelControlNode(DTROS):
         self.wheels_topic = f"/{self.vehicle_name}/wheels_driver_node/wheels_cmd"
         self._left_encoder_topic = f"/{self.vehicle_name}/left_wheel_encoder_node/tick"
         self._right_encoder_topic = f"/{self.vehicle_name}/right_wheel_encoder_node/tick"
+        self.led_topic = f"/{self.vehicle_name}/led_emitter_node/led_pattern"
 
         self._ticks_left = 0
         self._ticks_right = 0
@@ -29,6 +34,8 @@ class WheelControlNode(DTROS):
         self.sub_right = rospy.Subscriber(self._right_encoder_topic, WheelEncoderStamped, self.callback_right)
         self._publisher = rospy.Publisher(self.wheels_topic, WheelsCmdStamped, queue_size=1)
 
+        self._led_pub = rospy.Publisher(self.led_topic,LEDPattern, queue_size=1)
+
 
     def callback_left(self, data):
         self._ticks_left = data.data
@@ -36,28 +43,45 @@ class WheelControlNode(DTROS):
     def callback_right(self, data):
         self._ticks_right = data.data
 
+    def set_led_color(self, r, g, b):
+        num_leds = 5  # Most Duckiebots have 5 LEDs. Adjust if yours differs!
 
-    def motor_control(self, left_power, right_power, distance_left, distance_right):
-        rate = rospy.Rate(10)
+        pattern_msg = LEDPattern()
+        pattern_msg.header.stamp = rospy.Time.now()
+
+        color_msg = ColorRGBA()
+        color_msg.r = r
+        color_msg.g = g
+        color_msg.b = b
+        color_msg.a = 1
+        pattern_msg.rgb_vals = [color_msg] * num_leds
+        # Publish
+        self._led_pub.publish(pattern_msg)
+
+    def dynamic_motor_control(self, left_power, right_power, distance_left, distance_right):
+        rate = rospy.Rate(100)
         msg = WheelsCmdStamped()
-        msg.header = Header()
         msg.vel_left = left_power
         msg.vel_right = right_power
 
         init_ticks_left = self._ticks_left
         init_ticks_right = self._ticks_right
 
-        rospy.loginfo_once(f"left encoder: {init_ticks_left}")
-        rospy.loginfo_once(f"Right encoder: {init_ticks_right}")
-
-        if(compute_distance(self._ticks_left - init_ticks_left) < distance_left): rospy.loginfo_once("a")
-        if(compute_distance(self._ticks_right - init_ticks_right) < distance_right): rospy.loginfo_once("b")
-
-        if(not rospy.is_shutdown()): rospy.loginfo_once("c")
-
         while (not rospy.is_shutdown()) and \
         (abs(compute_distance(self._ticks_left - init_ticks_left)) < abs(distance_left)) and \
         (abs(compute_distance(self._ticks_right - init_ticks_right)) < abs(distance_right)):
+
+            dist_ratio = distance_left/distance_right
+
+            left_dist = self._ticks_left - init_ticks_left
+            right_dist = self._ticks_right - init_ticks_right
+            
+            diff = abs(left_dist) - abs(right_dist)*dist_ratio
+            modifier = 55 * diff/1000
+            msg.vel_left = left_power * (1 - modifier)
+            msg.vel_right = right_power * (1 + modifier)
+
+
             msg.header.stamp = rospy.Time.now()
             self._publisher.publish(msg)
             rate.sleep()
@@ -72,19 +96,46 @@ class WheelControlNode(DTROS):
 
 
     def run(self):
-        rospy.sleep(1)
-        self.motor_control(0.5, 0.5, 1.25, 1.25)
-        rospy.sleep(1)
-        self.motor_control(-0.5, -0.5, 1.25, 1.25)
-        rospy.sleep(1)
-        self.motor_control(0.3, -0.3, 0.09, 0.09) # 90 deg right rotation
-        rospy.sleep(1)
-        self.motor_control(-0.3, 0.3, 0.09, 0.09) # 90 deg left rotation
+        #-----------------
+        #part 2
+        #-----------------
         # rospy.sleep(1)
-        # self.motor_control(0.242, 0.66, 0.377, 0.534) #left curve 90 deg with 29cm rad
+        # self.dynamic_motor_control(0.5, 0.5, 1.25, 1.25)
         # rospy.sleep(1)
-        # self.motor_control(0.60, 0.272, 0.534, 0.377) #right curve 90 deg with 29cm rad
-        
+        # self.motor_control(-0.5, -0.5, 1.25, 1.25)
+        # rospy.sleep(1)
+        # self.motor_control(0.8, -0.8, 0.09, 0.09) # 90 deg right rotation
+        # rospy.sleep(1)
+        # self.motor_control(-0.3, 0.3, 0.09, 0.09) # 90 deg left rotation
+
+
+        #-----------------
+        #part 3
+        #-----------------
+        rospy.sleep(1)
+        self.set_led_color(1, 0, 0)
+        self.dynamic_motor_control(0.5, 0.5, 1.15, 1.15)
+        rospy.sleep(1)
+        self.set_led_color(0, 0, 1)
+        self.dynamic_motor_control(0.5, -0.5, 0.061, 0.061)
+        rospy.sleep(1)
+        self.set_led_color(1, 0, 0)
+        self.dynamic_motor_control(0.5, 0.5, 0.85, 0.85)
+        rospy.sleep(1)
+        self.set_led_color(0, 1, 0)
+        self.dynamic_motor_control(0.586, 0.4, 0.534, 0.377)
+        rospy.sleep(1)
+        self.set_led_color(1, 0, 0)
+        self.dynamic_motor_control(0.5, 0.5, 0.53, 0.53)
+        rospy.sleep(1)
+        self.set_led_color(0, 1, 0)
+        self.dynamic_motor_control(0.586, 0.3, 0.534, 0.377)
+        rospy.sleep(1)
+        self.set_led_color(1, 0, 0)
+        self.dynamic_motor_control(0.5, 0.5, 0.85, 0.85)
+        rospy.sleep(1)
+        self.set_led_color(0, 0, 1)
+        self.dynamic_motor_control(0.5, -0.5, 0.061, 0.061)
 
 if __name__ == '__main__':
     node = WheelControlNode(node_name='wheel_control_node')
