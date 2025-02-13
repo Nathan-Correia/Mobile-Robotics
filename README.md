@@ -1,8 +1,10 @@
 ## How to use it
 
-### 1. Fork this repository
+### 1. About this repository
 
-Use the fork button in the top-right corner of the github page to fork this template repository.
+Use the fork button in the top-right corner of the github page to fork this template repository. 
+
+/Mobile-Robotics/packages/my_package/src/wheel_control_encoders.py has all the code for drive forwards, backwards, rotate, D shape. We control the power percentage and distance of both wheels to make robots drive in different mode.
 
 
 ### 2. Change important variables
@@ -17,7 +19,9 @@ After that open this folder in the terminal. Once you are in the folder, type in
 
 ### 4. Run the program
 
-To run the program, type in the terminal: dts devel run -R [Vehicle_name] -L wheel-control. Replace [Vehicle_name] with your robot's name.
+Driving part: To run the program, type in the terminal: dts devel run -R [Vehicle_name] -L wheel-control. Replace [Vehicle_name] with your robot's name.
+
+Camera part: To run the program, type in the terminal: dts devel run -R [Vehicle_name] -L camera-reader -X. Replace [Vehicle_name] with your robot's name.
 
 
 ### 5. Plotting trajectory
