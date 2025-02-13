@@ -4,7 +4,7 @@
 
 Use the fork button in the top-right corner of the github page to fork this template repository. 
 
-/Mobile-Robotics/packages/my_package/src/wheel_control_encoders.py has all the code for drive forwards, backwards, rotate, D shape. We control the power percentage and distance of both wheels to make robots drive in different mode.
+/Mobile-Robotics/packages/my_package/src/wheel_control_encoders.py has all the code for drive forwards, backwards, rotate, D shape. We control the power percentage and distance of both wheels to make robots drive in different modes.
 
 
 ### 2. Change important variables
