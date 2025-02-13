@@ -1,12 +1,3 @@
-# Template: template-ros
-
-This template provides a boilerplate repository
-for developing ROS-based software in Duckietown.
-
-**NOTE:** If you want to develop software that does not use
-ROS, check out [this template](https://github.com/duckietown/template-basic).
-
-
 ## How to use it
 
 ### 1. Fork this repository
@@ -14,34 +5,21 @@ ROS, check out [this template](https://github.com/duckietown/template-basic).
 Use the fork button in the top-right corner of the github page to fork this template repository.
 
 
-### 2. Create a new repository
+### 2. Change important variables
 
-Create a new repository on github.com while
-specifying the newly forked template repository as
-a template for your new repository.
+Before running the code, please navigate to /Mobile-Robotics/packages/my_package/src/wheel_control_encoders.py and make changes to the radius of the wheels and the length between the wheels and centre of rotation if necessary.
 
 
-### 3. Define dependencies
+### 3. Build the program
 
-List the dependencies in the files `dependencies-apt.txt` and
-`dependencies-py3.txt` (apt packages and pip packages respectively).
-
-
-### 4. Place your code
-
-Place your code in the directory `/packages/` of
-your new repository.
+After that open this folder in the terminal. Once you are in the folder, type in the terminal: dts devel build -f to build the program in the duckiebot.
 
 
-### 5. Setup launchers
+### 4. Run the program
 
-The directory `/launchers` can contain as many launchers (launching scripts)
-as you want. A default launcher called `default.sh` must always be present.
+To run the program, type in the terminal: dts devel run -R [Vehicle_name] -L wheel-control. Replace [Vehicle_name] with your robot's name.
 
-If you create an executable script (i.e., a file with a valid shebang statement)
-a launcher will be created for it. For example, the script file 
-`/launchers/my-launcher.sh` will be available inside the Docker image as the binary
-`dt-launcher-my-launcher`.
 
-When launching a new container, you can simply provide `dt-launcher-my-launcher` as
-command.
+### 5. Plotting trajectory
+
+Once you have recorded the rosbag, put it in /Mobile-Robotics and run plot.py in /Mobile-Robotics/packages/my_package/src.
