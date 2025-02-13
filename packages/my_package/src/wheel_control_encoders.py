@@ -77,7 +77,7 @@ class WheelControlNode(DTROS):
             right_dist = self._ticks_right - init_ticks_right
             
             diff = abs(left_dist) - abs(right_dist)*dist_ratio
-            modifier = 5 * diff/1000
+            modifier = 55 * diff/1000
 
             msg.vel_left = left_power * (1 - modifier)
             msg.vel_right = right_power * (1 + modifier)
