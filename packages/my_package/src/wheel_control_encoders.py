@@ -77,7 +77,7 @@ class WheelControlNode(DTROS):
             right_dist = self._ticks_right - init_ticks_right
             
             diff = abs(left_dist) - abs(right_dist)*dist_ratio
-            modifier = 55 * diff/1000
+            modifier = 5 * diff/1000
 
             msg.vel_left = left_power * (1 - modifier)
             msg.vel_right = right_power * (1 + modifier)
@@ -114,29 +114,26 @@ class WheelControlNode(DTROS):
         #part 3
         #-----------------
         rospy.sleep(1)
+        self.set_led_color(0, 1, 0)
+        rospy.sleep(5)
         self.set_led_color(1, 0, 0)
         self.dynamic_motor_control(0.5, 0.5, 1.12, 1.12)
         rospy.sleep(1)
-        self.set_led_color(0, 0, 1)
         self.dynamic_motor_control(0.6, -0.6, 0.061, 0.061)
         rospy.sleep(1)
-        self.set_led_color(1, 0, 0)
         self.dynamic_motor_control(0.5, 0.5, 0.85, 0.85)
         rospy.sleep(1)
-        self.set_led_color(0, 1, 0)
         self.dynamic_motor_control(0.586, 0.4, 0.534, 0.377)
         rospy.sleep(1)
-        self.set_led_color(1, 0, 0)
         self.dynamic_motor_control(0.5, 0.5, 0.57, 0.57)
         rospy.sleep(1)
-        self.set_led_color(0, 1, 0)
         self.dynamic_motor_control(0.586, 0.4, 0.534, 0.377)
         rospy.sleep(1)
-        self.set_led_color(1, 0, 0)
         self.dynamic_motor_control(0.5, 0.5, 0.85, 0.85)
         rospy.sleep(1)
-        self.set_led_color(0, 0, 1)
-        self.dynamic_motor_control(0.65, -0.65, 0.061, 0.061)
+        self.dynamic_motor_control(0.7, -0.7, 0.07, 0.07)
+        self.set_led_color(0, 1, 0)
+        rospy.sleep(5)
 
 if __name__ == '__main__':
     node = WheelControlNode(node_name='wheel_control_node')
